@@ -3,7 +3,7 @@ import scrapy
 class PccomSpider(scrapy.Spider):
     name = "pccom"
     allowed_domains = ["www.pccomponentes.com"]
-    start_urls = ["https://cimarunning.com/14-zapatillas-running?page=1"]
+    start_urls = ["https://www.pccomponentes.com/teclados?page=1"]
     page_number = 1
 
     def parse(self, response):
@@ -20,5 +20,5 @@ class PccomSpider(scrapy.Spider):
 
         # go to next page
         self.page_number += 1
-        next_page = f'https://cimarunning.com/14-zapatillas-running?page={self.page_number}/'
+        next_page = f'https://www.pccomponentes.com/teclados?page={self.page_number}/'
         yield response.follow(next_page, callback=self.parse)
