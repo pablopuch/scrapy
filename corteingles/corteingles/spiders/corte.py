@@ -1,38 +1,48 @@
 import scrapy
 from corteingles.items import CorteinglesItem
 from scrapy.exceptions import CloseSpider
-from scrapy.exporters import CsvItemExporter
-
+import csv
 
 class CorteSpider(scrapy.Spider):
     name = "corte"
     allowed_domains = ["www.elcorteingles.es"]
     start_urls = ["https://www.elcorteingles.es/electronica/accesorios-informatica/teclados/"]
-    handle_httpstatus_list = [404] # to catch 404 with callback
+    handle_httpstatus_list = [404]  # Capturar respuesta 404 con una devolución de llamada
     page_number = 1
+    data = []
 
     def parse(self, response):
-        
-        # stop spider on 404 response
-        if response.status == 404: 
-            raise CloseSpider('Recieve 404 response')
-                
-        # stop spider when no quotes found in response
+        # Detener el spider en caso de respuesta 404
+        if response.status == 404:
+            raise CloseSpider('Recibida respuesta 404')
+
+        # Detener el spider cuando no se encuentren teclados en la respuesta
         if len(response.css('div.product_preview-body')) == 0:
-            raise CloseSpider('No quotes in response')
-        
-        exporter = CsvItemExporter(open('data.csv', 'w', encoding='utf-8-sig'))
-        exporter.start_exporting()
+            raise CloseSpider('No hay teclados en la respuesta')
 
-        quote_item = CorteinglesItem()
-        for quote in response.css('div.product_preview-body'):
-            quote_item['marca'] = quote.css('div.product_preview-brand::text').get()
-            quote_item['price'] = quote.css('span.price _big ::text').get()
-            yield quote_item
-            
-        exporter.finish_exporting()
+        # Iterar sobre cada teclado en la respuesta
+        for keyboard in response.css('div.product_preview-body'):
+            # Crear un item para el teclado
+            keyboard_item = CorteinglesItem()
+            # Extraer la marca y el precio
+            keyboard_item['name'] = keyboard.css('p.product_preview-desc::text').get()
+            keyboard_item['marca'] = keyboard.css('div.product_preview-brand::text').get()
+            keyboard_item['price'] = keyboard.css('span.integer-price::text').get()
 
-        # go to next page
+            # Agregar el item a la lista de datos
+            self.data.append(keyboard_item)
+
+        # Ir a la siguiente página
         self.page_number += 1
         next_page = f'https://www.elcorteingles.es/electronica/accesorios-informatica/teclados/{self.page_number}/'
         yield response.follow(next_page, callback=self.parse)
+
+    def closed(self, reason):
+        # Guardar los datos en un archivo CSV cuando el spider se cierre
+        filename = 'teclados.csv'
+        fieldnames = ['name' ,'marca', 'price']
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+            writer.writeheader()
+            writer.writerows([data_dict for data_dict in self.data])
+        self.log(f'Spider cerrado: {reason}. Los datos se han guardado en {filename}.')

@@ -10,4 +10,5 @@ class CorteinglesItem(scrapy.Item):
     # define the fields for your item here like:
     marca = scrapy.Field()
     price = scrapy.Field()
+    name = scrapy.Field()
     pass
