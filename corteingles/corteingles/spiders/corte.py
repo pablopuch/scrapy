@@ -24,13 +24,25 @@ class CorteSpider(scrapy.Spider):
         for keyboard in response.css('div.product_preview-body'):
             # Crear un item para el teclado
             keyboard_item = CorteinglesItem()
-            # Extraer la marca y el precio
+
+            # Extraer la marca, nombre y precio
             keyboard_item['name'] = keyboard.css('p.product_preview-desc::text').get()
             keyboard_item['marca'] = keyboard.css('div.product_preview-brand::text').get()
-            keyboard_item['price'] = keyboard.css('span.integer-price::text').get()
+
+            price_integer = keyboard.css('span.integer-price::text').get()
+
+            # Verificar si la clase "price._big._sale" está presente
+            if keyboard.css('span.price._big._sale'):
+                price_fraction = keyboard.css('span.price._big._sale span:not(.integer-price)::text').get()
+            else:
+                price_fraction = keyboard.css('span.price._big span:not(.integer-price)::text').get()
+            
+            keyboard_item['price'] = f"{price_integer},{price_fraction} "
 
             # Agregar el item a la lista de datos
             self.data.append(keyboard_item)
+
+
 
         # Ir a la siguiente página
         self.page_number += 1
