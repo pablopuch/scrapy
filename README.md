@@ -41,5 +41,3 @@ run scrapy
         <img src="resources\csv.png" alt="csv_final">
     </a>
 </p>
-
-link 
