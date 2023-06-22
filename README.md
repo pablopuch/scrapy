@@ -5,7 +5,7 @@
 </p>
 
 # Mini Scrapy project
-This is a small project to see how the Python Scrapy library works and how we can get data from different web pages.
+This is a small project to see how the Python Scrapy library works and how we can get data from different web pages. In this case we are going to scrape the online shop "elcorteingles.es" and get the name, brand and price of all the keyboards it sells and download it in a csv file.
 
 ## Installation process 
 
