@@ -41,3 +41,7 @@ run scrapy
         <img src="resources\csv.png" alt="csv_final">
     </a>
 </p>
+
+## Resources
+
+Full tutorial : https://openwebinars.net/academia/portada/extrae-informacion-web-scrapy/
