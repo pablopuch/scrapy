@@ -13,6 +13,10 @@ Clone the repository
 
     git clone https://github.com/pablopuch/scrapy.git
 
+Switch to the repo folder
+
+    cd scrapy
+
 Install framework scrapy
 
     pip install scrapy
